@@ -7,6 +7,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -66,14 +68,19 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(innerPadding)
                     ) {
 
+
                         composable(Screen.Login.route) {
                             LoginScreen(
                                 onLoginClick = { username ->
                                     viewModel.setUsername(username)
-                                    navController.navigate(Screen.Home.route)
+                                    navController.navigate(Screen.Home.route) {
+
+                                        popUpTo(Screen.Login.route) { inclusive = true }
+                                    }
                                 }
                             )
                         }
+
 
                         composable(Screen.Home.route) {
                             HomeScreen(
@@ -92,6 +99,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
 
     @Composable
     fun LoginScreen(onLoginClick: (String) -> Unit) {
@@ -142,6 +150,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+
     @Composable
     fun HomeScreen(
         username: String,
@@ -166,6 +175,7 @@ class MainActivity : ComponentActivity() {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -184,6 +194,7 @@ class MainActivity : ComponentActivity() {
                     FeatureBox("Police Station", R.drawable.police)
                     FeatureBox("Hospital", R.drawable.hospital)
                 }
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
@@ -191,6 +202,7 @@ class MainActivity : ComponentActivity() {
                     FeatureBox("Fire Station", R.drawable.fire)
                     FeatureBox("Rela", R.drawable.rela)
                 }
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
@@ -214,8 +226,6 @@ class MainActivity : ComponentActivity() {
 
         val incidentTypes = listOf("Robbery", "Fire", "Accident")
 
-        var selected by remember { mutableStateOf(incidentTypes[0]) }
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -231,7 +241,6 @@ class MainActivity : ComponentActivity() {
             incidentTypes.forEach {
                 Button(
                     onClick = {
-                        selected = it
                         viewModel.setIncident(it)
                     },
                     modifier = Modifier.fillMaxWidth()
@@ -246,6 +255,7 @@ class MainActivity : ComponentActivity() {
             Text("Selected: ${viewModel.userData.incidentType}")
         }
     }
+
 
     @Composable
     fun FeatureBox(title: String, imageRes: Int) {
